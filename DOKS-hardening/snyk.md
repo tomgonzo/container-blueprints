@@ -1,32 +1,32 @@
-# Using the Snyk Vulnerability Scanning Tool
+# Using Snyk to Secure your DOKS Deployments
 
-## Introduction
+## Introduction to Snyk
 
-[Snyk](https://snyk.io) is defined as a developer security platform and its main goal is to help you detect and fix vulnerabilities in your application source code, third party dependencies, container images, and infrastructure configuration files (e.g. Kubernetes, Terraform, etc).
+[Snyk](https://snyk.io)'s developer security platform helps application teams find and fix vulnerabilities in their application source code, third party dependencies, container images, and infrastructure configuration files (e.g. Kubernetes, Terraform, etc).
 
-Snyk is divided into four components:
+Snyk's Platform is comprised of four products:
 
-1. [Snyk Code](https://docs.snyk.io/products/snyk-code) - helps you find and fix vulnerabilities in your application source code.
-2. [Snyk Open Source](https://docs.snyk.io/products/snyk-open-source) - helps you find and fix vulnerabilities for any 3rd party libraries or dependencies your application relies on.
-3. [Snyk Container](https://docs.snyk.io/products/snyk-container) - helps you find and fix vulnerabilities in container images or Kubernetes workloads used in your cluster.
-4. [Snyk Infrastructure as Code](https://docs.snyk.io/products/snyk-infrastructure-as-code) - helps you find and fix misconfigurations in your Kubernetes manifests (Terraform, CloudFormation and Azure are supported as well).
+1. [Snyk Code](https://docs.snyk.io/products/snyk-code) - Static Application Security Testing (SAST) to help you find and fix security vulnerabilities and quality issues in your applications' source code.
+2. [Snyk Open Source](https://docs.snyk.io/products/snyk-open-source) - Software Composition Analysis (SCA) to help you find and fix vulnerabilities in your applications' 3rd party open source libraries and their transitive dependencies.
+3. [Snyk Container](https://docs.snyk.io/products/snyk-container) - extends SCA to help you find and fix vulnerabilities in open source components present in all layers of your container images.
+4. [Snyk Infrastructure as Code](https://docs.snyk.io/products/snyk-infrastructure-as-code) - helps you find and fix misconfigurations in Kubernetes YAML and Infrastructure as Code manifests such as Terraform, CloudFormation, and Azure Resource Manager.
 
 Snyk can be run in different ways:
 
-- Via the command line interface using [Snyk CLI](https://docs.snyk.io/snyk-cli). This the preferred way to run inside scripts and various automations, including CI/CD pipelines.
-- In the browser as [Snyk Web UI](https://docs.snyk.io/snyk-web-ui). Snyk offers a cloud based platform as well which you can use to investigate scan reports, receive hints and take required actions to fix reported issues, etc. You can also connect GitHub repositories and perform scans/audits from the web interface.
-- Via [IDE plugins](https://docs.snyk.io/ide-tools). This way you can spot issues early as you're developing using your favorite IDE (e.g. Visual Studio Code).
+- From the command line using the [Snyk CLI](https://docs.snyk.io/snyk-cli). This the preferred way to run inside scripts and various automations, including CI/CD pipelines.
+- Through integrations in the [Snyk Web UI](https://docs.snyk.io/snyk-web-ui). Snyk allows you to connect Source Code Repositories (such as GitHub and Bitbucket), Container Registries (such as Digital Ocean Container Registry), and more to perform scans, review results, and take action to fix reported issues. 
+- Via [IDE plugins](https://docs.snyk.io/ide-tools). These plugins integrate with your favorite IDE (such as VS Code) to help you identify and take action against issues as you're developing.
 - Programmatically, via the [Snyk API](https://support.snyk.io/hc/en-us/categories/360000665657-Snyk-API). Snyk API is available to customers on [paid plans](https://snyk.io/plans) and allows you to programmatically integrate with Snyk.
 
-Is Snyk free ?
+### Is Snyk free ?
 
-Yes, the tooling is free, except [Snyk API](https://support.snyk.io/hc/en-us/categories/360000665657-Snyk-API) and some advanced features from the web UI (such as advanced reporting). There is also a limitation on the number of tests you can perform per month.
+Snyk is [free for Open Source projects](https://snyk.io/open-source-projects/). For private projects, Snyk has a Free Plan with a monthly allowance of tests you can run. The scanners in the free plan are the same as the paid plans, which grant access to additional features such as the [Snyk API](https://support.snyk.io/hc/en-us/categories/360000665657-Snyk-API), Jira integration, and reporting. 
 
-See [pricing plans](https://snyk.io/plans/) for more information.
+See [Snyk's pricing plans page](https://snyk.io/plans/) for more information.
 
-Is Snyk open source ?
+### Is Snyk open source ?
 
-Yes, the tooling and Snyk CLI for sure is. You can visit the [Snyk GitHub home page](https://github.com/snyk) to find more details about each component implementation. The cloud portal and all paid features such as the rest API implementation is not open source.
+While the Snyk Application itself is commercial software, Snyk's CLI and complementary tooling is open source. Visit the [Snyk GitHub home page](https://github.com/snyk) to find more details about each component implementation. The cloud portal and all paid features such as the rest API implementation is not open source.
 
 Another important set of concepts that is Snyk is using are [Targets](https://docs.snyk.io/introducing-snyk/introduction-to-snyk-projects#targets) and [Projects](https://docs.snyk.io/introducing-snyk/introduction-to-snyk-projects#projects).
 
@@ -67,22 +67,22 @@ To complete all steps from this guide, you will need:
 1. A working `DOKS` cluster running `Kubernetes version >=1.21` that you have access to. For additional instructions on configuring a DigitalOcean Kubernetes cluster, see: [How to Set Up a DigitalOcean Managed Kubernetes Cluster (DOKS)](https://github.com/digitalocean/Kubernetes-Starter-Kit-Developers/tree/main/01-setup-DOKS#how-to-set-up-a-digitalocean-managed-kubernetes-cluster-doks).
 2. A [DigitalOcean Docker Registry](https://docs.digitalocean.com/products/container-registry/). A free plan is enough to complete this tutorial. Also, make sure it is integrated with your DOKS cluster as explained [here](https://docs.digitalocean.com/products/container-registry/how-to/use-registry-docker-kubernetes/#kubernetes-integration).
 3. [Kubectl](https://kubernetes.io/docs/tasks/tools) CLI for `Kubernetes` interaction. Follow these [instructions](https://www.digitalocean.com/docs/kubernetes/how-to/connect-to-cluster/) to connect to your cluster with `kubectl` and `doctl`.
-4. [Snyk CLI](https://docs.snyk.io/snyk-cli/install-the-snyk-cli) to interact with [Snyk](https://snyk.io) vulnerabilities scanner.
-5. A free [Snyk cloud account](https://app.snyk.io) account used to periodically publish scan results for your Kubernetes cluster to a nice dashboard. Also, the Snyk web interface helps you with investigations and risk analysis. Please follow [How to Create a Snyk Account](https://docs.snyk.io/tutorials/getting-started/snyk-integrations/snyk-account) documentation page.
+4. [Snyk CLI](https://docs.snyk.io/snyk-cli/install-the-snyk-cli) to interact with [Snyk](https://snyk.io).
+5. A free [Snyk account](https://app.snyk.io) to scan and consume scan results for your Kubernetes cluster. Visit the [How to Create a Snyk Account](https://docs.snyk.io/tutorials/getting-started/snyk-integrations/snyk-account) documentation page to learn how to create one.
 
-## Step 1 - Getting to Know the Snyk CLI
+## Step 1 - Get to Know the Snyk CLI
 
-You can manually scan for vulnerabilities via the `snyk` command line interface. The snyk CLI is designed to be used in various scripts and automations. A practical example is in a CI/CD pipeline implemented using various tools such as Tekton, Jenkins, GitHub Workflows, etc.
+The Snyk CLI allows you to scan for vulnerabilities via the `snyk` command. Beyond standalone scanning, the Snyk CLI is designed to be used in scripts and automation, such as a CI/CD pipeline using tools such as Tekton, Jenkins, GitHub Actions, etc.
 
-When the snyk CLI is invoked it will immediately start the scanning process and report back issues in a specific format. By default it will print a summary table using the standard output or the console. Snyk can generate reports in other formats as well, such as JSON, HTML, SARIF, etc.
+When invoked, the Snyk CLI will start the scanning process and report back issues using the standard output or the console. Reports can also be generated in other formats as well, such as JSON, HTML, and SARIF.
 
-You can opt to push the results to the [Snyk Cloud Portal](https://app.snyk.io) (or web UI) via the `--report` flag to store and visualize scan results later.
+You can opt to push the results to the [Snyk UI](https://app.snyk.io) to store and visualize scan results later.
 
 **Note:**
 
-It's not mandatory to submit scan results to the Snyk cloud portal. The big advantage of using the Snyk portal is visibility because it gives you access to a nice dashboard where you can check all scan reports and see how much the Kubernetes supply chain is impacted. It also helps you on the long term with investigations and remediation hints.
+While it's not mandatory to upload scan results to the Snyk UI, the Snyk UI gives users that don't want to use the CLI visibility into scan reports, remediation information, and fix advice to help them measure the impact on the Kubernetes supply chain.
 
-Snyk CLI is divided into several subcommands. Each subcommand is dedicated to a specific feature, such as:
+All four Snyk products can be invoked using the CLI through its different subcommands:
 
 - [Open source scanning](https://docs.snyk.io/products/snyk-open-source/use-snyk-open-source-from-the-cli) - identifies current project dependencies and reports found security issues.
 - [Code scanning](https://docs.snyk.io/products/snyk-code/cli-for-snyk-code) - reports security issues found in your application source code.
@@ -119,10 +119,10 @@ A few examples to try with Snyk CLI:
 
     ```shell
     # Scans the debian docker image by pulling it first
-    snyk container debian
+    snyk container test debian
 
     # Give more context to the scanner by providing a Dockerfile (make sure to replace the `<>` placeholders accordingly)
-    snyk container debian --file=<path/to/dockerfile>
+    snyk container test debian --file=<path/to/dockerfile>
     ```
 
 4. Infrastructure as code scanning:
