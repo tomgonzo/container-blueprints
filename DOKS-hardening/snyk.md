@@ -1,6 +1,6 @@
 # Using Snyk to Secure your DOKS Deployments
 
-Welcome! In this guide you will use [Snyk](https://snyk.io) to analyze the Container Images and Kubernetes YAML manifests making up a Kubernetes applications supply chain for vulnerabilities. Then, you will take the appropriate action to remediate the situation. Finally, you will learn how to integrate Snyk in a CI/CD pipeline to scan for vulnerabilities in the early stages of development.
+Welcome! In this guide you will use [Snyk](https://snyk.io) to analyze the Container Images and Kubernetes YAML manifests making up a Kubernetes applications supply chain for vulnerabilities. You will learn how to scan for vulnerabilities in the early stages of development and integrate Snyk in a CI/CD pipeline. Finally, you will take the appropriate action to remediate the situation.
 
 ## Table of Contents
 
@@ -25,7 +25,7 @@ Welcome! In this guide you will use [Snyk](https://snyk.io) to analyze the Conta
 
 [Snyk](https://snyk.io)'s developer security platform helps application teams find and fix vulnerabilities in their application source code, third party dependencies, container images, and infrastructure configuration files (e.g. Kubernetes, Terraform, etc).
 
-Snyk's Platform is comprised of four products:
+Snyk's Platform comprises of four products:
 
 1. [Snyk Code](https://docs.snyk.io/products/snyk-code) - Static Application Security Testing (SAST) to help you find and fix security vulnerabilities and quality issues in your applications' source code.
 2. [Snyk Open Source](https://docs.snyk.io/products/snyk-open-source) - Software Composition Analysis (SCA) to help you find and fix vulnerabilities in your applications' 3rd party open source libraries and their transitive dependencies.
@@ -53,117 +53,71 @@ While the Snyk Application itself is licensed commercial software, Snyk's CLI an
 
 To complete all steps from this guide, you will need:
 
-1. A working `DOKS` cluster running `Kubernetes version >=1.21` that you have access to. For additional instructions on configuring a DigitalOcean Kubernetes cluster, see: [How to Set Up a DigitalOcean Managed Kubernetes Cluster (DOKS)](https://github.com/digitalocean/Kubernetes-Starter-Kit-Developers/tree/main/01-setup-DOKS#how-to-set-up-a-digitalocean-managed-kubernetes-cluster-doks).
+1. Access to a `DOKS` cluster running `Kubernetes version >=1.21`. For additional instructions on configuring a DigitalOcean Kubernetes cluster, see: [How to Set Up a DigitalOcean Managed Kubernetes Cluster (DOKS)](https://github.com/digitalocean/Kubernetes-Starter-Kit-Developers/tree/main/01-setup-DOKS#how-to-set-up-a-digitalocean-managed-kubernetes-cluster-doks).
 2. A [DigitalOcean Docker Registry](https://docs.digitalocean.com/products/container-registry/). A free plan is enough to complete this tutorial. Also, make sure it is integrated with your DOKS cluster as explained [here](https://docs.digitalocean.com/products/container-registry/how-to/use-registry-docker-kubernetes/#kubernetes-integration).
 3. [Kubectl](https://kubernetes.io/docs/tasks/tools) CLI for `Kubernetes` interaction. Follow these [instructions](https://www.digitalocean.com/docs/kubernetes/how-to/connect-to-cluster/) to connect to your cluster with `kubectl` and `doctl`.
-4. [Snyk CLI](https://docs.snyk.io/snyk-cli/install-the-snyk-cli) to interact with [Snyk](https://snyk.io).
-5. A free [Snyk account](https://app.snyk.io) to scan and consume scan results for your Kubernetes cluster. Visit the [How to Create a Snyk Account](https://docs.snyk.io/tutorials/getting-started/snyk-integrations/snyk-account) documentation page to learn how to create one.
+4. An environment with the [Snyk CLI](https://docs.snyk.io/snyk-cli/install-the-snyk-cli) installed, to interact with [Snyk](https://snyk.io).
+5. A free [Snyk account](https://app.snyk.io) to scan and consume scan results. Visit the [How to Create a Snyk Account](https://docs.snyk.io/tutorials/getting-started/snyk-integrations/snyk-account) documentation page to learn how to create one.
+6. A GitHub account with a fork of the [Kubernetes Sample Apps GitHub Repo](https://github.com/digitalocean/kubernetes-sample-apps/blob/master/.github/workflows/game-2048-snyk.yaml) we'll use in this tutorial.
 
-## Step 1 - Get to Know the Snyk CLI
+## Step 1 - Scan locally with the Snyk CLI
 
-The Snyk CLI allows you to scan for vulnerabilities via the `snyk` command. Beyond standalone scanning, the Snyk CLI is designed to be used in scripts and automation, such as a CI/CD pipeline using tools such as Tekton, Jenkins, GitHub Actions, etc.
+**Note:**
 
-When invoked, the Snyk CLI will start the scanning process and report back issues using the standard output or the console. Reports can also be generated in other formats as well, such as JSON, HTML, and SARIF.
+Before moving on, please make sure to [Create a free Snyk account](https://docs.snyk.io/tutorials/getting-started/snyk-integrations/snyk-account) and [Install the Snyk CLI](https://docs.snyk.io/snyk-cli/install-the-snyk-cli).
 
-You can opt to push the results to the [Snyk UI](https://app.snyk.io) to store and visualize scan results later.
+### About the Snyk CLI
+
+The Snyk CLI allows you to scan for vulnerabilities via the `snyk` command. Beyond standalone scanning, the Snyk CLI can also be used in scripts and automation, such as a CI/CD pipeline using tools such as Tekton, Jenkins, GitHub Actions, etc. When invoked, the Snyk CLI will scan then report issues using the standard output or the console. Reports can also be generated in other formats as well, such as JSON, HTML, and SARIF.
+
+You can opt to push scan results to the [Snyk UI](https://app.snyk.io) to store and visualize later.
 
 **Note:**
 
 While it's not mandatory to upload scan results to the Snyk UI, the Snyk UI gives users that don't want to use the CLI visibility into scan reports, remediation information, and fix advice to help them measure the impact on the Kubernetes supply chain.
 
-All four Snyk products can be invoked using the CLI through its different subcommands:
+### Your first scans
 
-- [Open source scanning](https://docs.snyk.io/products/snyk-open-source/use-snyk-open-source-from-the-cli) - identifies current project dependencies and reports found security issues.
-- [Code scanning](https://docs.snyk.io/products/snyk-code/cli-for-snyk-code) - reports security issues found in your application source code.
-- [Image scanning](https://docs.snyk.io/products/snyk-container/snyk-cli-for-container-security) - reports security issues found in container images (e.g. Docker).
-- [Infrastructure as code files scanning](https://docs.snyk.io/products/snyk-infrastructure-as-code/snyk-cli-for-infrastructure-as-code) - reports security issues found in configuration files used by Kubernetes, Terraform, etc.
+Clone the previously Forked [Kubernetes Sample Apps GitHub Repo](https://github.com/digitalocean/kubernetes-sample-apps/) repository to your local working environment, and navigate to the `doks-example` directory. 
 
-**Note:**
+```shell
+git clone https://github.com/<github_user>/kubernetes-sample-apps
+cd kubernetes-sample-apps
+cd doks-example
+```
 
-Before moving on, please make sure to create a [free account](https://docs.snyk.io/tutorials/getting-started/snyk-integrations/snyk-account) using the Snyk web UI. Also, snyk CLI needs to be [authenticated](https://docs.snyk.io/snyk-cli/authenticate-the-cli-with-your-account) with your cloud account as well in order for some commands/subcommands to work (e.g. `snyk code test`).
+[Authenticate the Snyk CLI](https://docs.snyk.io/snyk-cli/authenticate-the-cli-with-your-account) with your Snyk account. Once authenticated, you can use both Snyk Infrastructure as Code and Snyk Container using the different subcommands.
 
-A few examples to try with Snyk CLI:
-
-1. Open source scanning:
-
-    ```shell
-    # Scans your project code from current directory
-    snyk test
-
-    # Scan a specific path from your project directory (make sure to replace the `<>` placeholders accordingly)
-    snyk test <path/to/dir>
-    ```
-
-2. Code scanning:
+- [Container Image Scanning](https://docs.snyk.io/products/snyk-container/snyk-cli-for-container-security) inspects a container image for vulnerabilities using the `container test` subcommand. To upload results to the Snyk UI, use `container monitor`.
 
     ```shell
-    # Scan your project code from current directory
-    snyk code test
+    # First, build the Container
+    docker build -t doks-example:latest .
+    
+    # Scan the built docker image
+    snyk container test doks-example:latest --file=Dockerfile
 
-    # Scan a specific path from your project directory (make sure to replace the `<>` placeholders accordingly)
-    snyk code test <path/to/dir>
+    # Upload results to Snyk
+    snyk container monitor doks-example:latest --file=Dockerfile
     ```
-
-3. Image scanning:
+    
+- [Infrastructure as code files scanning](https://docs.snyk.io/products/snyk-infrastructure-as-code/snyk-cli-for-infrastructure-as-code) checks our Kubernetes manifest for configuration risks. 
 
     ```shell
-    # Scans the debian docker image by pulling it first
-    snyk container test debian
-
-    # Give more context to the scanner by providing a Dockerfile (make sure to replace the `<>` placeholders accordingly)
-    snyk container test debian --file=<path/to/dockerfile>
+    # Test manifest files locally
+    snyk iac test manifest.yaml
+    
+    # Upload manifest file scan results to Snyk
+    snyk iac test manifest.yaml --report
     ```
-
-4. Infrastructure as code scanning:
-
-    ```shell
-    # Scan your project code from current directory
-    snyk iac test
-
-    # Scan a specific path from your project directory (make sure to replace the `<>` placeholders accordingly)
-    snyk iac test <path/to/dir>
-
-    # Scan Kustomize based projects (first you need to render the final template, then pass it to the scanner)
-    kustomize build > kubernetes.yaml
-    snyk iac test kubernetes.yaml
-    ```
-
-Snyk CLI provides help pages for all available options. Below command can be used to print the main help page:
+    
+To learn all available options for the Snyk CLI, use the help command.
 
 ```shell
 snyk --help
 ```
 
-The output looks similar to:
-
-```text
-CLI commands help
-  Snyk CLI scans and monitors your projects for security vulnerabilities and license issues.
-
-  For more information visit the Snyk website https://snyk.io
-
-  For details see the CLI documentation https://docs.snyk.io/features/snyk-cli
-
-How to get started
-  1. Authenticate by running snyk auth
-  2. Test your local project with snyk test
-  3. Get alerted for new vulnerabilities with snyk monitor
-
-Available commands
-  To learn more about each Snyk CLI command, use the --help option, for example, snyk auth --help or 
-  snyk container --help
-
-  snyk auth
-    Authenticate Snyk CLI with a Snyk account.
-
-  snyk test
-    Test a project for open source vulnerabilities and license issues.
-...
-```
-
-Each snyk CLI command (or subcommand) has an associated help page as well which can be accessed via `snyk [command] --help`.
-
-Please visit the official [snyk CLI documentation page](https://docs.snyk.io/snyk-cli) for more examples.
+Each snyk CLI command (or subcommand) has an associated help page as well which can be accessed via `snyk [command] --help`. Please visit the official [Snyk CLI Documentation](https://docs.snyk.io/snyk-cli) for more examples.
 
 ## Step 2 - Getting to Know the Snyk Web UI
 
@@ -266,7 +220,6 @@ Below picture illustrates the flow for the example CI/CD pipeline used in this g
 
 Please follow below steps to create and test the snyk CI/CD GitHub workflow provided in the [kubernetes-sample-apps](https://github.com/digitalocean/kubernetes-sample-apps) GitHub repository:
 
-1. Fork the [kubernetes-sample-apps](https://github.com/digitalocean/kubernetes-sample-apps) GitHub repository.
 2. Create the following [GitHub encrypted secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) for your **kubernetes-sample-apps** copy (**Settings Tab** -> **Secrets** -> **Actions**):
    - `DIGITALOCEAN_ACCESS_TOKEN` - holds your DigitalOcean account token.
    - `DOCKER_REGISTRY` - holds your DigitalOcean docker registry name including the endpoint (e.g. `registry.digitalocean.com/sample-apps`).
