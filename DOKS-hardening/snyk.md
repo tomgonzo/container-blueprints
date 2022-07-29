@@ -1,49 +1,10 @@
 # Using Snyk to Secure your DOKS Deployments
 
-## Introduction to Snyk
-
-[Snyk](https://snyk.io)'s developer security platform helps application teams find and fix vulnerabilities in their application source code, third party dependencies, container images, and infrastructure configuration files (e.g. Kubernetes, Terraform, etc).
-
-Snyk's Platform is comprised of four products:
-
-1. [Snyk Code](https://docs.snyk.io/products/snyk-code) - Static Application Security Testing (SAST) to help you find and fix security vulnerabilities and quality issues in your applications' source code.
-2. [Snyk Open Source](https://docs.snyk.io/products/snyk-open-source) - Software Composition Analysis (SCA) to help you find and fix vulnerabilities in your applications' 3rd party open source libraries and their transitive dependencies.
-3. [Snyk Container](https://docs.snyk.io/products/snyk-container) - extends SCA to help you find and fix vulnerabilities in open source components present in all layers of your container images.
-4. [Snyk Infrastructure as Code](https://docs.snyk.io/products/snyk-infrastructure-as-code) - helps you find and fix misconfigurations in Kubernetes YAML and Infrastructure as Code manifests such as Terraform, CloudFormation, and Azure Resource Manager.
-
-Snyk can be run in different ways:
-
-- From the command line using the [Snyk CLI](https://docs.snyk.io/snyk-cli). This the preferred way to run inside scripts and various automations, including CI/CD pipelines.
-- Through integrations in the [Snyk Web UI](https://docs.snyk.io/snyk-web-ui). Snyk allows you to connect Source Code Repositories (such as GitHub and Bitbucket), Container Registries (such as Digital Ocean Container Registry), and more to perform scans, review results, and take action to fix reported issues. 
-- Via [IDE plugins](https://docs.snyk.io/ide-tools). These plugins integrate with your favorite IDE (such as VS Code) to help you identify and take action against issues as you're developing.
-- Programmatically, via the [Snyk API](https://support.snyk.io/hc/en-us/categories/360000665657-Snyk-API). Snyk API is available to customers on [paid plans](https://snyk.io/plans) and allows you to programmatically integrate with Snyk.
-
-### Is Snyk free ?
-
-Snyk is [free for Open Source projects](https://snyk.io/open-source-projects/). For private projects, Snyk has a Free Plan with a monthly allowance of tests you can run. The scanners in the free plan are the same as the paid plans, which grant access to additional features such as the [Snyk API](https://support.snyk.io/hc/en-us/categories/360000665657-Snyk-API), Jira integration, and reporting. 
-
-See [Snyk's pricing plans page](https://snyk.io/plans/) for more information.
-
-### Is Snyk open source ?
-
-While the Snyk Application itself is commercial software, Snyk's CLI and complementary tooling is open source. Visit the [Snyk GitHub home page](https://github.com/snyk) to find more details about each component implementation. The cloud portal and all paid features such as the rest API implementation is not open source.
-
-Another important set of concepts that is Snyk is using are [Targets](https://docs.snyk.io/introducing-snyk/introduction-to-snyk-projects#targets) and [Projects](https://docs.snyk.io/introducing-snyk/introduction-to-snyk-projects#projects).
-
-Targets represent an external resource Snyk has scanned through an integration, the CLI, UI or API. Example targets are a SCM repository, a Kubernetes workload, etc.
-
-Projects on the other hand, define the items Snyk scans at a given Target. A project includes:
-
-- A scannable item external to Snyk.
-- Configuration to define how to run that scan.
-
-You can read more about Snyk core concepts [here](https://docs.snyk.io/introducing-snyk/snyks-core-concepts).
-
-In this guide you will use [Snyk CLI](https://docs.snyk.io/snyk-cli) to perform risk analysis for your Kubernetes applications supply chain (container images, Kubernetes YAML manifests). Then, you will learn how to take the appropriate action to remediate the situation. Finally, you will learn how to integrate Snyk in a CI/CD pipeline to scan for vulnerabilities in the early stages of development.
+Welcome! In this guide you will use [Snyk](https://snyk.io) to analyze the Container Images and Kubernetes YAML manifests making up a Kubernetes applications supply chain for vulnerabilities. Then, you will take the appropriate action to remediate the situation. Finally, you will learn how to integrate Snyk in a CI/CD pipeline to scan for vulnerabilities in the early stages of development.
 
 ## Table of Contents
 
-- [Introduction](#introduction)
+- [Introduction](#introduction-to-snyk)
 - [Requirements](#requirements)
 - [Step 1 - Getting to Know the Snyk CLI](#step-1---getting-to-know-the-snyk-cli)
 - [Step 2 - Getting to Know the Snyk Web UI](#step-2---getting-to-know-the-snyk-web-ui)
@@ -59,6 +20,34 @@ In this guide you will use [Snyk CLI](https://docs.snyk.io/snyk-cli) to perform 
 - [Step 6 - Enabling Slack Notifications](#step-6---enabling-slack-notifications)
 - [Conclusion](#conclusion)
 - [Additional Resources](#additional-resources)
+
+## Introduction to Snyk
+
+[Snyk](https://snyk.io)'s developer security platform helps application teams find and fix vulnerabilities in their application source code, third party dependencies, container images, and infrastructure configuration files (e.g. Kubernetes, Terraform, etc).
+
+Snyk's Platform is comprised of four products:
+
+1. [Snyk Code](https://docs.snyk.io/products/snyk-code) - Static Application Security Testing (SAST) to help you find and fix security vulnerabilities and quality issues in your applications' source code.
+2. [Snyk Open Source](https://docs.snyk.io/products/snyk-open-source) - Software Composition Analysis (SCA) to help you find and fix vulnerabilities in your applications' 3rd party open source libraries and their transitive dependencies.
+3. [Snyk Container](https://docs.snyk.io/products/snyk-container) - extends SCA to help you find vulnerabilities in open source component vulnerabilities in your container images and suggest the most secure base images for your workload.
+4. [Snyk Infrastructure as Code](https://docs.snyk.io/products/snyk-infrastructure-as-code) - helps you find and fix misconfigurations in Kubernetes YAML and Infrastructure as Code manifests such as Terraform, CloudFormation, and Azure Resource Manager.
+
+Snyk can be run in different ways:
+
+- From the command line using the [Snyk CLI](https://docs.snyk.io/snyk-cli). This the preferred way to run inside scripts and various automations, including CI/CD pipelines.
+- Through integrations in the [Snyk Web UI](https://docs.snyk.io/snyk-web-ui). Snyk allows you to connect Source Code Repositories (such as GitHub and Bitbucket), Container Registries (such as Digital Ocean Container Registry), and more to perform scans, review results, and take action to fix reported issues. 
+- Via [IDE plugins](https://docs.snyk.io/ide-tools). These plugins integrate with your favorite IDE (such as VS Code) to help you identify and take action against issues as you're developing.
+- Programmatically, via the [Snyk API](https://support.snyk.io/hc/en-us/categories/360000665657-Snyk-API). Snyk API is available to customers on [paid plans](https://snyk.io/plans) and allows you to programmatically integrate with Snyk.
+
+### Is Snyk free ?
+
+Snyk is [free for Open Source projects](https://snyk.io/open-source-projects/). For private projects, Snyk has a Free Plan with a monthly allowance of tests you can run. The scanners in the free plan are the same as the paid plans, which grant access to additional features such as the [Snyk API](https://support.snyk.io/hc/en-us/categories/360000665657-Snyk-API), Jira integration, and reporting. 
+
+See [Snyk's pricing plans page](https://snyk.io/plans/) for more information.
+
+### Is Snyk Open Source software?
+
+While the Snyk Application itself is licensed commercial software, Snyk's CLI and complementary tooling is open source. Visit [Snyk's GitHub](https://github.com/snyk) to explore each's component implementation. 
 
 ## Requirements
 
