@@ -6,8 +6,8 @@ Welcome! In this guide you will use [Snyk](https://snyk.io) to analyze the Conta
 
 - [Introduction](#introduction-to-snyk)
 - [Requirements](#requirements)
-- [Step 1 - Getting to Know the Snyk CLI](#step-1---getting-to-know-the-snyk-cli)
-- [Step 2 - Getting to Know the Snyk Web UI](#step-2---getting-to-know-the-snyk-web-ui)
+- [Step 1 - Scan locally with the Snyk CLI](#step-1---scan-locally-with-the-snyk-cli)
+- [Step 2 - View Scan Results in the Snyk UI](#step-2---view-scan-results-in-the-snyk-ui)
   - [Understanding Snyk Severity Levels](#understanding-snyk-severity-levels)
   - [Assisted Remediation for Reported Security Issues](#assisted-remediation-for-reported-security-issues)
 - [Step 3 - Using Snyk to Scan for Kubernetes Configuration Vulnerabilities in a CI/CD Pipeline](#step-3---using-snyk-to-scan-for-kubernetes-configuration-vulnerabilities-in-a-cicd-pipeline)
@@ -58,7 +58,7 @@ To complete all steps from this guide, you will need:
 3. [Kubectl](https://kubernetes.io/docs/tasks/tools) CLI for `Kubernetes` interaction. Follow these [instructions](https://www.digitalocean.com/docs/kubernetes/how-to/connect-to-cluster/) to connect to your cluster with `kubectl` and `doctl`.
 4. An environment with the [Snyk CLI](https://docs.snyk.io/snyk-cli/install-the-snyk-cli) installed, to interact with [Snyk](https://snyk.io).
 5. A free [Snyk account](https://app.snyk.io) to scan and consume scan results. Visit the [How to Create a Snyk Account](https://docs.snyk.io/tutorials/getting-started/snyk-integrations/snyk-account) documentation page to learn how to create one.
-6. A GitHub account with a fork of the [Kubernetes Sample Apps GitHub Repo](https://github.com/digitalocean/kubernetes-sample-apps/blob/master/.github/workflows/game-2048-snyk.yaml) we'll use in this tutorial.
+6. A GitHub account with a fork of the [Kubernetes Sample Apps GitHub Repo](https://github.com/digitalocean/kubernetes-sample-apps) we'll use in this tutorial.
 
 ## Step 1 - Scan locally with the Snyk CLI
 
@@ -74,7 +74,7 @@ You can opt to push scan results to the [Snyk UI](https://app.snyk.io) to store 
 
 **Note:**
 
-While it's not mandatory to upload scan results to the Snyk UI, the Snyk UI gives users that don't want to use the CLI visibility into scan reports, remediation information, and fix advice to help them measure the impact on the Kubernetes supply chain.
+While it's not mandatory to upload scan results to the Snyk UI, the Snyk UI gives users that don't want to use the CLI visibility into scan reports, remediation information, and other resources to help them measure the impact on the Kubernetes supply chain.
 
 ### Your first scans
 
@@ -119,9 +119,9 @@ snyk --help
 
 Each snyk CLI command (or subcommand) has an associated help page as well which can be accessed via `snyk [command] --help`. Please visit the official [Snyk CLI Documentation](https://docs.snyk.io/snyk-cli) for more examples.
 
-## Step 2 - Getting to Know the Snyk Web UI
+## Step 2 - View scan results in the Snyk UI
 
-After you [sign up for a Snyk account, authenticate and log in to Snyk](https://docs.snyk.io/getting-started), the Web UI opens to the Dashboard, with a wizard to guide you through setup steps:
+You can see the results of the executed scans by logging into Snyk. After you [sign up for a Snyk account, authenticate and log in to Snyk](https://docs.snyk.io/getting-started), the Web UI opens to the Dashboard, with a wizard to guide you through setup steps:
 
 - Identifying where the code you want to monitor in Snyk is located.
 - Defining which projects within your code you want Snyk to scan.
@@ -139,7 +139,7 @@ The following features are available via the web UI:
 - [Get help](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#view-helpful-resources)
 - [Manage your user account](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#manage-account-preferences-and-settings)
 
-Please visit the official documentation page to learn more about the [Snyk web UI](https://docs.snyk.io/snyk-web-ui).
+Please visit the official documentation page to learn more about the [Snyk Web UI](https://docs.snyk.io/snyk-web-ui).
 
 ### Understanding Snyk Severity Levels
 
