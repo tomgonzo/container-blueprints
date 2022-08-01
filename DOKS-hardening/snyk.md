@@ -1,6 +1,6 @@
 # Using Snyk to Secure your DOKS Deployments
 
-Welcome! In this guide you will use [Snyk](https://snyk.io) to analyze the Container Images and Kubernetes YAML manifests making up a Kubernetes applications supply chain for vulnerabilities. You will learn how to scan for vulnerabilities in the early stages of development and integrate Snyk in a CI/CD pipeline. Finally, you will take the appropriate action to remediate the situation.
+Welcome! In this guide you will use [Snyk](https://snyk.io) to analyze the Container Images and YAML manifests making up a Kubernetes application's supply chain for vulnerabilities and misconfigurations. You will learn how to run these checks in the early stages of development and integrate them in a GitHub Actions CI/CD pipeline. Finally, you will take the appropriate action to remediate the issues identified. Let's go!
 
 ## Table of Contents
 
