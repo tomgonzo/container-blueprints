@@ -8,7 +8,7 @@ Welcome! In this guide you will use [Snyk](https://snyk.io) to analyze the Conta
 - [Requirements](#requirements)
 - [Step 1 - Scan locally with the Snyk CLI](#step-1---scan-locally-with-the-snyk-cli)
 - [Step 2 - View Scan Results in the Snyk UI](#step-2---view-scan-results-in-the-snyk-ui)
-- [Step 3 - Using Snyk to Scan for Kubernetes Configuration Vulnerabilities in a CI/CD Pipeline](#step-3---using-snyk-to-scan-in-a-cicd-pipeline)
+- [Step 3 - Using Snyk to Scan in a CI/CD Pipeline](#step-3---using-snyk-to-scan-in-a-cicd-pipeline)
   - [GitHub Actions CI/CD Workflow Implementation](#github-actions-cicd-workflow-implementation)
 - [Step 4 - Investigating Snyk Scan Results and Fixing Reported Issues](#step-4---investigating-snyk-scan-results-and-fixing-reported-issues)
   - [Investigating and Fixing Container Images Vulnerabilities](#investigating-and-fixing-container-images-vulnerabilities)
