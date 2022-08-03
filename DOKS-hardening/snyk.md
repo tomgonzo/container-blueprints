@@ -8,9 +8,7 @@ Welcome! In this guide you will use [Snyk](https://snyk.io) to analyze the Conta
 - [Requirements](#requirements)
 - [Step 1 - Scan locally with the Snyk CLI](#step-1---scan-locally-with-the-snyk-cli)
 - [Step 2 - View Scan Results in the Snyk UI](#step-2---view-scan-results-in-the-snyk-ui)
-  - [Understanding Snyk Severity Levels](#understanding-snyk-severity-levels)
-  - [Assisted Remediation for Reported Security Issues](#assisted-remediation-for-reported-security-issues)
-- [Step 3 - Using Snyk to Scan for Kubernetes Configuration Vulnerabilities in a CI/CD Pipeline](#step-3---using-snyk-to-scan-for-kubernetes-configuration-vulnerabilities-in-a-cicd-pipeline)
+- [Step 3 - Using Snyk to Scan for Kubernetes Configuration Vulnerabilities in a CI/CD Pipeline](#step-3---using-snyk-to-scan-in-a-cicd-pipeline)
   - [GitHub Actions CI/CD Workflow Implementation](#github-actions-cicd-workflow-implementation)
 - [Step 4 - Investigating Snyk Scan Results and Fixing Reported Issues](#step-4---investigating-snyk-scan-results-and-fixing-reported-issues)
   - [Investigating and Fixing Container Images Vulnerabilities](#investigating-and-fixing-container-images-vulnerabilities)
@@ -153,17 +151,17 @@ Here are some other resources to explore around what's available via the Snyk UI
 - [View Snyk updates](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#view-product-updates)
 - [Manage your user account](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#manage-account-preferences-and-settings)
 
-## Step 3 - Using Snyk to Scan for Kubernetes Configuration Vulnerabilities in a CI/CD Pipeline
+## Step 3 - Using Snyk to Scan in a CI/CD Pipeline
 
-How do you benefit from embedding a security compliance scanning tool in your CI/CD pipeline and avoid unpleasant situations in a production environment?
+Embedding a security compliance scanning tool in your CI/CD pipeline can help you avoid unpleasant situations in a production environment.
 
 It all starts at the foundation level where software development starts. In general, you will want to use a dedicated environment for each stage. So, in the early stages of development when application code changes very often, you should use a dedicated development environment (called the lower environment usually). Then, the application gets more and more refined in the QA environment where QA teams perform manual and/or automated testing. Next, if the application gets the QA team approval it is promoted to the upper environments such as staging, and finally into production. In this process, where the application is promoted from one environment to another, a dedicated pipeline runs which continuously scans application artifacts and checks the severity level. If the severity level doesn't meet a specific threshold, the pipeline fails immediately and application artifacts promotion to production is stopped in the early stages.
 
 So, the security scanning tool (e.g. Snyk) can act as a gatekeeper stopping insecure artifacts from entering your production environment from the early stages of development. In the same manner, upper environments pipelines use snyk to allow or forbid application artifacts entering the final production stage.
 
-### GitHub Actions CI/CD Workflow Implementation
+### Implementing Snyk into a GitHub Actions CI/CD Workflow 
 
-In this step you will create and test a CI/CD pipeline with integrated vulnerability scanning via GitHub Actions workflows. To learn the fundamentals of using Github Actions with DigitalOcean Kubernetes, refer to this [tutorial](https://docs.digitalocean.com/tutorials/enable-push-to-deploy/).
+In this step you will create and test a CI/CD pipeline via GitHub Actions workflows with integrated vulnerability scanning. To learn the fundamentals of using Github Actions with DigitalOcean Kubernetes, refer to this [tutorial](https://docs.digitalocean.com/tutorials/enable-push-to-deploy/).
 
 The pipeline provided in the following section builds and deploys the [game-2048-example](https://github.com/digitalocean/kubernetes-sample-apps/tree/master/game-2048-example) application from the DigitalOcean [kubernetes-sample-apps](https://github.com/digitalocean/kubernetes-sample-apps) repository.
 
