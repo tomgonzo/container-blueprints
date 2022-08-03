@@ -121,53 +121,9 @@ Each snyk CLI command (or subcommand) has an associated help page as well which 
 
 ## Step 2 - View scan results in the Snyk UI
 
-You can see the results of the executed scans by logging into Snyk. After you [sign up for a Snyk account, authenticate and log in to Snyk](https://docs.snyk.io/getting-started), the Web UI opens to the Dashboard, with a wizard to guide you through setup steps:
+If you opted to upload results to Snyk in Step 1, you can review the scan results by logging into the [Snyk Web UI](https://docs.snyk.io/snyk-web-ui). [Log in to Snyk](https://docs.snyk.io/getting-started) and you'll be taken to the projects tab, where you can see the uploaded projects. 
 
-- Identifying where the code you want to monitor in Snyk is located.
-- Defining which projects within your code you want Snyk to scan.
-- Connecting Snyk to the relevant projects to scan them.
-- Reviewing the results of your Snyk scan.
-
-The following features are available via the web UI:
-
-- [Explore the dashboard](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#dashboard)
-- [Investigate reports](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#reports)
-- [Manage projects](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#manage-your-projects)
-- [Manage integrations](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#manage-your-integrations)
-- [Manage group or organization members](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#manage-organization-or-group-members)
-- [View Snyk updates](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#view-product-updates)
-- [Get help](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#view-helpful-resources)
-- [Manage your user account](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#manage-account-preferences-and-settings)
-
-Please visit the official documentation page to learn more about the [Snyk Web UI](https://docs.snyk.io/snyk-web-ui).
-
-### Understanding Snyk Severity Levels
-
-On each scan, snyk verifies your resources for potential security risks and how each impacts your system. A severity level is applied to a vulnerability, to indicate the risk for that vulnerability in an application.
-
-Severity levels can take one of below values:
-
-- **Low**: the application may expose some data allowing vulnerability mapping, which can be used with other vulnerabilities to attack the application.
-- **Medium**: may allow attackers under some conditions to access sensitive data on your application.
-- **High**: may allow attackers to access sensitive data on your application.
-- **Critical**: may allow attackers to access sensitive data and run code on your application.
-
-The Common Vulnerability Scoring System (CVSS) determines the severity level of a vulnerability. Snyk uses [CVSS framework version 3.1](https://www.first.org/cvss/v3-1/) to communicate the characteristics and severity of vulnerabilities.
-
-Below table shows each severity level mapping:
-
-| **Severity level** | **CVSS score** |
-|:------------------:|:--------------:|
-| Low | 0.0 - 3.9 |
-| Medium | 4.0 - 6.9 |
-| High | 7.0 - 8.9 |
-| Critical | 9.0 - 10.10 |
-
-Please visit the [official documentation](https://docs.snyk.io/introducing-snyk/snyks-core-concepts/severity-levels) page to learn more about severity levels.
-
-### Assisted Remediation for Reported Security Issues
-
-Another useful feature provided by the Snyk web UI is security issues remediation assistance. It means, you receive a recommendation about how to fix each security issue found by the snyk scanner. This is very important because it simplifies the process and closes the loop for each iteration that you need to perform to fix each reported security issue.
+Like the CLI, the Snyk UI offers recommendations around how to fix each issue found by Snyk. This simplifies the remediation process and helps teams  close the loop for each iteration needed to fix each reported issue.
 
 Below picture illustrates this process better:
 
@@ -179,17 +135,35 @@ For each reported issue there is a button which you can click on and get remedia
 
 The main procedure is the same for each reported issue. It means, you click on the show details button, then take the suggested steps to apply the fix.
 
+### Reviewing Snyk Container Results
+
+As seen in Step 1, the Snyk Container CLI scans our Container Image for vulnerable open source components and provides advice on how to remediate the issues. This information can be seen in more detail within the Web UI. Review the Snyk Documentation to learn how to [Interpret the Analysis and Fixes for your image in the Snyk Web UI](https://docs.snyk.io/products/snyk-container/getting-around-the-snyk-container-ui/analysis-and-remediation-for-your-images-from-the-snyk-app). We will take action on the issues found in later steps.
+
+### Reviewing Snyk Infrastructure as Code Results
+Similarly, Snyk Infrastructure as Code displays issues found in your Kubernetes configuration manifests. Review the Snyk Documentation for how to [Explore Snyk IaC Issues in the Web UI](https://docs.snyk.io/products/snyk-infrastructure-as-code/using-snyk-iac-via-web). Again, we will take action on the issues found in later steps. 
+
+### Helpful Resources for the Snyk UI
+Here are some other resources to explore around what's available via the Snyk UI:
+
+- [Explore the dashboard](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#dashboard)
+- [Investigate reports](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#reports)
+- [Manage projects](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#manage-your-projects)
+- [Manage integrations](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#manage-your-integrations)
+- [Manage group or organization members](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#manage-organization-or-group-members)
+- [View Snyk updates](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#view-product-updates)
+- [Manage your user account](https://docs.snyk.io/snyk-web-ui/getting-started-with-the-snyk-web-ui#manage-account-preferences-and-settings)
+
 ## Step 3 - Using Snyk to Scan for Kubernetes Configuration Vulnerabilities in a CI/CD Pipeline
 
 How do you benefit from embedding a security compliance scanning tool in your CI/CD pipeline and avoid unpleasant situations in a production environment?
 
 It all starts at the foundation level where software development starts. In general, you will want to use a dedicated environment for each stage. So, in the early stages of development when application code changes very often, you should use a dedicated development environment (called the lower environment usually). Then, the application gets more and more refined in the QA environment where QA teams perform manual and/or automated testing. Next, if the application gets the QA team approval it is promoted to the upper environments such as staging, and finally into production. In this process, where the application is promoted from one environment to another, a dedicated pipeline runs which continuously scans application artifacts and checks the severity level. If the severity level doesn't meet a specific threshold, the pipeline fails immediately and application artifacts promotion to production is stopped in the early stages.
 
-So, the security scanning tool (e.g. snyk) acts as a gatekeeper stopping unwanted artifacts getting in your production environment from the early stages of development. In the same manner, upper environments pipelines use snyk to allow or forbid application artifacts entering the final production stage.
+So, the security scanning tool (e.g. Snyk) can act as a gatekeeper stopping insecure artifacts from entering your production environment from the early stages of development. In the same manner, upper environments pipelines use snyk to allow or forbid application artifacts entering the final production stage.
 
 ### GitHub Actions CI/CD Workflow Implementation
 
-In this step you will learn how to create and test a sample CI/CD pipeline with integrated vulnerability scanning via GitHub workflows.  To learn the fundamentals of using Github Actions with DigitalOcean Kubernetes, refer to this [tutorial](https://docs.digitalocean.com/tutorials/enable-push-to-deploy/).
+In this step you will create and test a CI/CD pipeline with integrated vulnerability scanning via GitHub Actions workflows. To learn the fundamentals of using Github Actions with DigitalOcean Kubernetes, refer to this [tutorial](https://docs.digitalocean.com/tutorials/enable-push-to-deploy/).
 
 The pipeline provided in the following section builds and deploys the [game-2048-example](https://github.com/digitalocean/kubernetes-sample-apps/tree/master/game-2048-example) application from the DigitalOcean [kubernetes-sample-apps](https://github.com/digitalocean/kubernetes-sample-apps) repository.
 
